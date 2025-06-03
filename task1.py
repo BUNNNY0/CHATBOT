@@ -1,34 +1,49 @@
 import random
 
-words = ['apple', 'chair', 'zebra', 'train', 'candy']
-word = random.choice(words)
-guessed = ['_'] * len(word)
-used = set()
-tries = 6
+class Hangman:
+    def __init__(self):
+        self.words = ['drums', 'eagle', 'cloud', 'zebra', 'flame']
+        self.secret = random.choice(self.words)
+        self.display = ['*' for _ in self.secret]
+        self.attempts = 6
+        self.used = set()
 
-print("Welcome to Hangman!\n")
+    def play(self):
+        print(">> HANGMAN GAME START <<")
+        while self.attempts > 0 and '*' in self.display:
+            print("Word:", ''.join(self.display))
+            print("Used:", ', '.join(sorted(self.used)))
+            guess = input("Enter a letter: ").lower()
 
-while tries > 0 and '_' in guessed:
-    print('Word:', ' '.join(guessed))
-    print('Used:', ' '.join(sorted(used)))
-    guess = input("Guess a letter: ").lower()
+            if not guess.isalpha() or len(guess) != 1:
+                print("Invalid input.")
+                continue
 
-    if len(guess) != 1 or not guess.isalpha() or guess in used:
-        print("Invalid or repeated guess.\n")
-        continue
+            if guess in self.used:
+                print("Already tried.")
+                continue
 
-    used.add(guess)
+            self.used.add(guess)
 
-    if guess in word:
-        for i, ch in enumerate(word):
-            if ch == guess:
-                guessed[i] = guess
-        print("Correct!\n")
-    else:
-        tries -= 1
-        print(f"Wrong! {tries} tries left.\n")
+            if guess in self.secret:
+                self.update_display(guess)
+                print("Nice one!")
+            else:
+                self.attempts -= 1
+                print("Wrong! Left:", self.attempts)
 
-if '_' not in guessed:
-    print("You won! Word was:", word)
-else:
-    print("You lost! Word was:", word)
+        self.end_game()
+
+    def update_display(self, char):
+        indices = [i for i in range(len(self.secret)) if self.secret[i] == char]
+        for i in indices:
+            self.display[i] = char
+
+    def end_game(self):
+        if '*' not in self.display:
+            print("You win! Word was:", self.secret)
+        else:
+            print("You lost! Word was:", self.secret)
+
+game = Hangman()
+game.play()
